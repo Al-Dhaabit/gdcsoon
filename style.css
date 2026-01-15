@@ -230,10 +230,25 @@ p {
 
 /* Updated Responsive adjustment for very small screens */
 /* Updated Responsive adjustment for very small screens */
+/* Updated Responsive adjustment for very small screens */
 @media (max-width: 480px) {
+    body {
+        perspective: none;
+        /* Disable 3D space */
+    }
+
+    .scene-wrapper,
+    .glass-card,
+    .logo-container,
+    h1,
+    p {
+        transform: none !important;
+        /* Force flatten everything */
+        transform-style: flat !important;
+    }
+
     .glass-card {
         padding: 1.5rem 1rem;
-        /* Tighter padding */
         width: 90vw;
         border-radius: 20px;
     }
