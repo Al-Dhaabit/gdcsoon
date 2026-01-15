@@ -231,7 +231,7 @@ p {
 /* Updated Responsive adjustment for very small screens */
 /* Updated Responsive adjustment for very small screens */
 /* Updated Responsive adjustment for very small screens */
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
     body {
         perspective: none;
         /* Disable 3D space */
