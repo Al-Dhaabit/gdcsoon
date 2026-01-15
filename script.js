@@ -1,68 +1,64 @@
 // ============================================
-// MASCOT ONLY - EVERYTHING ELSE STATIC
+// MASCOT ONLY - RANDOM WANDERING
 // ============================================
 
 const mascot = document.querySelector('.mascot');
-let time = 0;
 
-// Mascot state for "wandering"
-const mascotState = {
-    x: Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1,
-    y: Math.random() * window.innerHeight * 0.8 + window.innerHeight * 0.1,
-    angle: Math.random() * Math.PI * 2,
-    speed: 0.8
+// Vector-based movement with random angles
+const fox = {
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+    vx: (Math.random() - 0.5) * 2.5, // Random direction
+    vy: (Math.random() - 0.5) * 2.5,
+    speed: 1.0 // SLOWED DOWN
 };
 
 function animate() {
-    time += 0.01;
-
-    // 1. BACKGROUND BLOBS DRIFT (Re-enabled)
-    if (blobs) {
-        blobs.forEach((blob, index) => {
-            // Slower, deeper breathing movement
-            const bX = Math.sin(time * 0.1 + index) * 50;
-            const bY = Math.cos(time * 0.15 + index) * 40;
-            blob.style.transform = `translate(${bX}px, ${bY}px)`;
-        });
-    }
-
-    // 2. MASCOT WANDERING LOGIC (The ONLY thing moving)
     if (mascot) {
-        // Slow organic turn
-        mascotState.angle += Math.sin(time * 1.5) * 0.015;
-
         // Update position
-        mascotState.x += Math.cos(mascotState.angle) * mascotState.speed;
-        mascotState.y += Math.sin(mascotState.angle) * mascotState.speed;
+        fox.x += fox.vx * fox.speed;
+        fox.y += fox.vy * fox.speed;
 
-        // Bounce off screen edges with PUSH-BACK
-        const padding = 80;
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        // Dynamic boundaries based on actual mascot size
+        const width = mascot.offsetWidth;
+        const height = mascot.offsetHeight;
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
 
-        if (mascotState.x < padding) {
-            mascotState.x = padding + 5;
-            mascotState.angle = Math.PI - mascotState.angle + (Math.random() - 0.5) * 0.5;
-        } else if (mascotState.x > width - padding) {
-            mascotState.x = width - padding - 5;
-            mascotState.angle = Math.PI - mascotState.angle + (Math.random() - 0.5) * 0.5;
+        // Absolute limits - Touching the very edge of the screen
+        const leftBound = halfWidth;
+        const rightBound = window.innerWidth - halfWidth;
+        const topBound = halfHeight;
+        const bottomBound = window.innerHeight - halfHeight;
+
+        // X Collision (Random angle on bounce)
+        if (fox.x <= leftBound) {
+            fox.x = leftBound;
+            fox.vx = Math.abs(fox.vx); // Bounce right
+            // RANDOMIZE the Y angle on bounce
+            fox.vy = (Math.random() - 0.5) * 3;
+        } else if (fox.x >= rightBound) {
+            fox.x = rightBound;
+            fox.vx = -Math.abs(fox.vx); // Bounce left
+            fox.vy = (Math.random() - 0.5) * 3;
         }
 
-        if (mascotState.y < padding) {
-            mascotState.y = padding + 5;
-            mascotState.angle = -mascotState.angle + (Math.random() - 0.5) * 0.5;
-        } else if (mascotState.y > height - padding) {
-            mascotState.y = height - padding - 5;
-            mascotState.angle = -mascotState.angle + (Math.random() - 0.5) * 0.5;
+        // Y Collision (Random angle on bounce)
+        if (fox.y <= topBound) {
+            fox.y = topBound;
+            fox.vy = Math.abs(fox.vy); // Bounce down
+            fox.vx = (Math.random() - 0.5) * 3;
+        } else if (fox.y >= bottomBound) {
+            fox.y = bottomBound;
+            fox.vy = -Math.abs(fox.vy); // Bounce up
+            fox.vx = (Math.random() - 0.5) * 3;
         }
 
-        // Gentle tilt and flip based on direction
-        const tilt = Math.sin(time * 2) * 4;
-        const scaleX = Math.cos(mascotState.angle) > 0 ? 1 : -1;
+        // Visual Orientation
+        const tilt = fox.vx * 2;
+        const scaleX = fox.vx < 0 ? -1 : 1;
 
-        mascot.style.left = `${mascotState.x}px`;
-        mascot.style.top = `${mascotState.y}px`;
-        mascot.style.transform = `translate(-50%, -50%) scaleX(${scaleX}) rotate(${tilt}deg)`;
+        mascot.style.transform = `translate(${fox.x}px, ${fox.y}px) scaleX(${scaleX}) rotate(${tilt}deg)`;
     }
 
     requestAnimationFrame(animate);
@@ -73,6 +69,10 @@ animate();
 
 // Handle screen resize
 window.addEventListener('resize', () => {
-    if (mascotState.x > window.innerWidth) mascotState.x = window.innerWidth / 2;
-    if (mascotState.y > window.innerHeight) mascotState.y = window.innerHeight / 2;
+    if (mascot) {
+        const hW = mascot.offsetWidth / 2;
+        const hH = mascot.offsetHeight / 2;
+        fox.x = Math.min(Math.max(fox.x, hW), window.innerWidth - hW);
+        fox.y = Math.min(Math.max(fox.y, hH), window.innerHeight - hH);
+    }
 });

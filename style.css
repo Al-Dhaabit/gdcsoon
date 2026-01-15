@@ -29,11 +29,11 @@ body {
     display: grid;
     place-items: center;
     position: relative;
-    /* Removed perspective to ensure 0 3D movement */
+    /* Static flat background */
 }
 
 /* ============================================
-   STATIC BACKGROUND (No Animation)
+   STATIC BACKGROUND (Visible but Still)
    ============================================ */
 .ambient-bg {
     position: fixed;
@@ -48,13 +48,11 @@ body {
 .blob {
     position: absolute;
     border-radius: 50%;
-    opacity: 0.85;
-    /* More apparent */
     mix-blend-mode: multiply;
+    /* User requested apparent blobs, keeping opacity up */
+    opacity: 0.85;
     filter: blur(60px);
-    /* Slightly sharper */
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    /* Slower, smoother drift */
+    /* NO ANIMATION or TRANSITION */
 }
 
 /* Static positions for blobs */
@@ -99,7 +97,7 @@ body {
 }
 
 /* ============================================
-   MAIN CONTENT
+   MAIN CONTENT (STATIC)
    ============================================ */
 .scene-wrapper {
     position: relative;
@@ -126,9 +124,11 @@ body {
         0 30px 60px -12px rgba(163, 71, 0, 0.1),
         inset 0 0 50px rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    /* STRICTLY STATIC */
+    transform: none !important;
 }
 
-/* Static Glare (Just a gradient overlay) */
+/* Static Glare */
 .glare {
     position: absolute;
     top: 0;
@@ -171,6 +171,7 @@ h1 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: reveal 0.8s backwards var(--delay);
 }
 
 .emoji {
@@ -182,17 +183,50 @@ p {
     color: var(--text-color);
     font-weight: 600;
     line-height: 1.5;
+    opacity: 0;
+    animation: fadeUp 1s forwards var(--delay);
 }
 
-/* Mascot Styling (Only moving element, controlled by JS) */
+/* Page Load Animations */
+@keyframes reveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mascot Styling (Controlled by JS) */
 .mascot {
     position: fixed;
+    top: 0;
+    left: 0;
     width: clamp(80px, 15vw, 150px);
     height: auto;
     z-index: 100;
     pointer-events: none;
     filter: drop-shadow(0 10px 20px rgba(163, 71, 0, 0.2));
     opacity: 0.9;
+    /* Initial state before JS takes over */
+    transform: translate(-50%, -50%);
 }
 
 /* Mobile Adjustments */
