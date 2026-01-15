@@ -15,13 +15,9 @@
 html,
 body {
     min-height: 100vh;
-    /* Fallback for older browsers */
     min-height: 100dvh;
-    /* Modern mobile fix */
-    /* Use dynamic viewport height */
     width: 100%;
     overflow: hidden;
-    /* Force hide all scrollbars */
     margin: 0;
     padding: 0;
 }
@@ -32,35 +28,36 @@ body {
     font-family: var(--font-main);
     display: grid;
     place-items: center;
-    overflow: hidden;
     position: relative;
-    perspective: 1500px;
+    /* Removed perspective to ensure 0 3D movement */
 }
 
 /* ============================================
-   AMBIENT BACKGROUND
+   STATIC BACKGROUND (No Animation)
    ============================================ */
 .ambient-bg {
     position: fixed;
-    top: -25%;
-    left: -25%;
-    width: 150%;
-    height: 150%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 0;
     pointer-events: none;
-    filter: blur(80px);
 }
 
 .blob {
     position: absolute;
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.85;
+    /* More apparent */
     mix-blend-mode: multiply;
-    transition: transform 0.5s ease-out;
-    /* Smooth JS drift */
+    filter: blur(60px);
+    /* Slightly sharper */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Slower, smoother drift */
 }
 
-/* Base positions for blobs */
+/* Static positions for blobs */
 .blob-1 {
     width: 50vmax;
     height: 50vmax;
@@ -131,6 +128,7 @@ body {
     overflow: hidden;
 }
 
+/* Static Glare (Just a gradient overlay) */
 .glare {
     position: absolute;
     top: 0;
@@ -140,12 +138,13 @@ body {
     pointer-events: none;
     mix-blend-mode: overlay;
     z-index: 5;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 70%);
+    opacity: 0.3;
 }
 
 /* Logo */
 .logo-container {
     margin-bottom: 2rem;
-    transform: translateZ(50px);
 }
 
 .floating-logo {
@@ -159,7 +158,6 @@ h1 {
     font-size: clamp(2rem, 8vw, 4rem);
     margin-bottom: 1rem;
     font-weight: 800;
-    transform: translateZ(30px);
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -173,7 +171,6 @@ h1 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: reveal 0.8s backwards var(--delay);
 }
 
 .emoji {
@@ -185,39 +182,9 @@ p {
     color: var(--text-color);
     font-weight: 600;
     line-height: 1.5;
-    transform: translateZ(20px);
-    opacity: 0;
-    animation: fadeUp 1s forwards var(--delay);
 }
 
-/* Animations */
-@keyframes reveal {
-    from {
-        opacity: 0;
-        transform: translateY(30px) rotateX(-30deg);
-        filter: blur(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) rotateX(0);
-        filter: blur(0);
-    }
-}
-
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Mascot Styling */
+/* Mascot Styling (Only moving element, controlled by JS) */
 .mascot {
     position: fixed;
     width: clamp(80px, 15vw, 150px);
@@ -228,25 +195,8 @@ p {
     opacity: 0.9;
 }
 
-/* Updated Responsive adjustment for very small screens */
-/* Updated Responsive adjustment for very small screens */
-/* Updated Responsive adjustment for very small screens */
-@media (max-width: 1024px) {
-    body {
-        perspective: none;
-        /* Disable 3D space */
-    }
-
-    .scene-wrapper,
-    .glass-card,
-    .logo-container,
-    h1,
-    p {
-        transform: none !important;
-        /* Force flatten everything */
-        transform-style: flat !important;
-    }
-
+/* Mobile Adjustments */
+@media (max-width: 480px) {
     .glass-card {
         padding: 1.5rem 1rem;
         width: 90vw;

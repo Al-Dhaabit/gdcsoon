@@ -1,12 +1,8 @@
 // ============================================
-// AUTONOMOUS BACKGROUND & MASCOT ONLY
-// Card is now STATIC per user request
+// MASCOT ONLY - EVERYTHING ELSE STATIC
 // ============================================
 
-const glare = document.querySelector('.glare');
-const blobs = document.querySelectorAll('.blob');
 const mascot = document.querySelector('.mascot');
-
 let time = 0;
 
 // Mascot state for "wandering"
@@ -14,28 +10,23 @@ const mascotState = {
     x: Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1,
     y: Math.random() * window.innerHeight * 0.8 + window.innerHeight * 0.1,
     angle: Math.random() * Math.PI * 2,
-    speed: 0.8 // SLOWER speed as requested
+    speed: 0.8
 };
 
 function animate() {
     time += 0.01;
 
-    // 1. GLARE SHIMMER (Subtle internal light on card)
-    if (glare) {
-        const glareX = 50 + Math.sin(time * 0.3) * 30;
-        const glareY = 50 + Math.cos(time * 0.25) * 30;
-        glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.6) 0%, transparent 60%)`;
-        glare.style.opacity = 0.25;
+    // 1. BACKGROUND BLOBS DRIFT (Re-enabled)
+    if (blobs) {
+        blobs.forEach((blob, index) => {
+            // Slower, deeper breathing movement
+            const bX = Math.sin(time * 0.1 + index) * 50;
+            const bY = Math.cos(time * 0.15 + index) * 40;
+            blob.style.transform = `translate(${bX}px, ${bY}px)`;
+        });
     }
 
-    // 2. BACKGROUND BLOBS DRIFT
-    blobs.forEach((blob, index) => {
-        const bX = Math.sin(time * 0.15 + index) * 30;
-        const bY = Math.cos(time * 0.15 + index) * 30;
-        blob.style.transform = `translate(${bX}px, ${bY}px)`;
-    });
-
-    // 3. MASCOT WANDERING LOGIC
+    // 2. MASCOT WANDERING LOGIC (The ONLY thing moving)
     if (mascot) {
         // Slow organic turn
         mascotState.angle += Math.sin(time * 1.5) * 0.015;
@@ -44,7 +35,7 @@ function animate() {
         mascotState.x += Math.cos(mascotState.angle) * mascotState.speed;
         mascotState.y += Math.sin(mascotState.angle) * mascotState.speed;
 
-        // Bounce off screen edges with PUSH-BACK to prevent vibration
+        // Bounce off screen edges with PUSH-BACK
         const padding = 80;
         const width = window.innerWidth;
         const height = window.innerHeight;
